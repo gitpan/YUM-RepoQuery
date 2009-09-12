@@ -3,12 +3,14 @@ abstract: 'Query a YUM repository for package information '
 author:
   - 'Chris Weyl <cweyl@alumni.drew.edu>'
 build_requires:
-  File::Find::Rule: 0
+  ExtUtils::MakeMaker: 6.42
   Test::DBICSchemaLoaderDigest: 0
   Test::More: 0
   ok: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.91'
 license: lgpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,6 +20,51 @@ no_index:
   directory:
     - inc
     - t
+    - xt
+provides:
+  YUM::RepoQuery:
+    file: lib/YUM/RepoQuery.pm
+    version: 0.1.2
+  YUM::RepoQuery::Schema:
+    file: lib/YUM/RepoQuery/Schema.pm
+  YUM::RepoQuery::Schema::Filelists:
+    file: lib/YUM/RepoQuery/Schema/Filelists.pm
+  YUM::RepoQuery::Schema::Filelists::Version10:
+    file: lib/YUM/RepoQuery/Schema/Filelists/Version10.pm
+  YUM::RepoQuery::Schema::Filelists::Version10::DbInfo:
+    file: lib/YUM/RepoQuery/Schema/Filelists/Version10/DbInfo.pm
+  YUM::RepoQuery::Schema::Filelists::Version10::Filelist:
+    file: lib/YUM/RepoQuery/Schema/Filelists/Version10/Filelist.pm
+  YUM::RepoQuery::Schema::Filelists::Version10::Packages:
+    file: lib/YUM/RepoQuery/Schema/Filelists/Version10/Packages.pm
+  YUM::RepoQuery::Schema::Other:
+    file: lib/YUM/RepoQuery/Schema/Other.pm
+  YUM::RepoQuery::Schema::Other::Version10:
+    file: lib/YUM/RepoQuery/Schema/Other/Version10.pm
+  YUM::RepoQuery::Schema::Other::Version10::Changelog:
+    file: lib/YUM/RepoQuery/Schema/Other/Version10/Changelog.pm
+  YUM::RepoQuery::Schema::Other::Version10::DbInfo:
+    file: lib/YUM/RepoQuery/Schema/Other/Version10/DbInfo.pm
+  YUM::RepoQuery::Schema::Other::Version10::Packages:
+    file: lib/YUM/RepoQuery/Schema/Other/Version10/Packages.pm
+  YUM::RepoQuery::Schema::Primary:
+    file: lib/YUM/RepoQuery/Schema/Primary.pm
+  YUM::RepoQuery::Schema::Primary::Version10:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Conflicts:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Conflicts.pm
+  YUM::RepoQuery::Schema::Primary::Version10::DbInfo:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/DbInfo.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Files:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Files.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Obsoletes:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Obsoletes.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Packages:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Packages.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Provides:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Provides.pm
+  YUM::RepoQuery::Schema::Primary::Version10::Requires:
+    file: lib/YUM/RepoQuery/Schema/Primary/Version10/Requires.pm
 requires:
   DBIx::Class: 0
   File::Find::Rule: 0
@@ -25,8 +72,15 @@ requires:
   File::Temp: 0
   IO::Uncompress::Bunzip2: 0
   Moose: 0
-  MooseX::AttributeHelpers: 0
+  MooseX::AttributeHelpers: 0.21
+  MooseX::Types::Path::Class: 0
   MooseX::Types::URI: 0
+  Path::Class: 0.16
   URI::Fetch: 0
   XML::Simple: 0
-version: 0.1.1
+  namespace::clean: 0.11
+resources:
+  homepage: http://github.com/RsrchBoy/yum-repoquery/tree
+  license: http://opensource.org/licenses/lgpl-license.php
+  repository: git://github.com/RsrchBoy/yum-repoquery.git
+version: 0.1.2
