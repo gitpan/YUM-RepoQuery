@@ -1,5 +1,14 @@
 #!/usr/bin/perl
 #
+# This file is part of YUM-RepoQuery
+#
+# This software is Copyright (c) 2011 by Chris Weyl.
+#
+# This is free software, licensed under:
+#
+#   The GNU Lesser General Public License, Version 2.1, February 1999
+#
+#
 # Little scriptie to help create our db schema definitions as needed.
 #
 # Chris Weyl <cweyl@alumni.drew.edu> 2008

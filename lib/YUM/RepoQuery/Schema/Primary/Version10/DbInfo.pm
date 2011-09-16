@@ -21,3 +21,29 @@ __PACKAGE__->add_columns(
 
 # You can replace this text with custom content, and it will be preserved on regeneration
 1;
+
+__END__
+=pod
+
+=head1 NAME
+
+YUM::RepoQuery::Schema::Primary::Version10::DbInfo
+
+=head1 VERSION
+
+version 0.002
+
+=head1 AUTHOR
+
+Chris Weyl <cweyl@alumni.drew.edu>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2011 by Chris Weyl.
+
+This is free software, licensed under:
+
+  The GNU Lesser General Public License, Version 2.1, February 1999
+
+=cut
+

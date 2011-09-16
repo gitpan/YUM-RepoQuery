@@ -1,34 +1,20 @@
-#############################################################################
-#
-# Query YUM repositories for package information. 
-#
-# Detailed documentation on this package can be found at the end of this
-# file.
-#
-# Copyright (c) Chris Weyl <cweyl@alumni.drew.edu> 2008.
-#
-#############################################################################
-
 package YUM::RepoQuery::Schema::Other;
 
 use base 'YUM::RepoQuery::Schema';
 
-# dinky little class that we can use for typeconstraints.
-
-
 1;
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
-YUM::RepoQuery::Schema::Other - Dinky base class.
+YUM::RepoQuery::Schema::Other
 
+=head1 VERSION
 
-=head1 SYNOPSIS
-
-See L<YUM::RepoQuery>
-
+version 0.002
 
 =head1 DESCRIPTION
 
@@ -41,29 +27,18 @@ L<YUM::RepoQuery>
 
 =head1 AUTHOR
 
-Chris Weyl  C<< <cweyl@alumni.drew.edu> >>
+Chris Weyl <cweyl@alumni.drew.edu>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2011 by Chris Weyl.
+
+This is free software, licensed under:
+
+  The GNU Lesser General Public License, Version 2.1, February 1999
+
+=cut
 
 
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2008, Chris Weyl C<< <cweyl@alumni.drew.edu> >>.
-
-This library is free software; you can redistribute it and/or modify it under
-the terms of the GNU Lesser General Public License as published by the Free 
-Software Foundation; either version 2.1 of the License, or (at your option) 
-any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT 
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-OR A PARTICULAR PURPOSE.
-
-See the GNU Lesser General Public License for more details.  
-
-You should have received a copy of the GNU Lesser General Public License 
-along with this library; if not, write to the 
-
-    Free Software Foundation, Inc., 
-    59 Temple Place, Suite 330, 
-    Boston, MA  02111-1307 USA
-
+__END__
 

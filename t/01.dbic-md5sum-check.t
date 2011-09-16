@@ -1,4 +1,13 @@
 #!/usr/bin/perl
+#
+# This file is part of YUM-RepoQuery
+#
+# This software is Copyright (c) 2011 by Chris Weyl.
+#
+# This is free software, licensed under:
+#
+#   The GNU Lesser General Public License, Version 2.1, February 1999
+#
 
 # check to make sure the md5sums on our generated schema files are intact...
 

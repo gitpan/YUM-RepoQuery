@@ -1,22 +1,22 @@
-#############################################################################
 #
-# Query YUM repositories for package information. 
+# This file is part of YUM-RepoQuery
 #
-# Detailed documentation on this package can be found at the end of this
-# file.
+# This software is Copyright (c) 2011 by Chris Weyl.
 #
-# Copyright (c) Chris Weyl <cweyl@alumni.drew.edu> 2008.
+# This is free software, licensed under:
 #
-#############################################################################
-
+#   The GNU Lesser General Public License, Version 2.1, February 1999
+#
 package YUM::RepoQuery;
+{
+  $YUM::RepoQuery::VERSION = '0.002';
+}
+
+# ABSTRACT: Query a YUM repository for package information
 
 use Moose;
-use MooseX::AttributeHelpers;
 use MooseX::Types::URI         ':all';
 use MooseX::Types::Path::Class ':all';
-
-our $VERSION = '0.1.2';
 
 use English '-no_match_vars';
 
@@ -30,6 +30,10 @@ use URI::Fetch;
 use XML::Simple;
 
 use namespace::clean -except => 'meta';
+
+with 'YUM::RepoQuery::Role::DB' => { name => 'primary'   };
+with 'YUM::RepoQuery::Role::DB' => { name => 'other'     };
+with 'YUM::RepoQuery::Role::DB' => { name => 'filelists' };
 
 # FIXME -- should be a URI type
 has id  => (is => 'ro', isa => 'Str', required => 1);
@@ -51,7 +55,7 @@ sub _build_cache_dir {
         ->maxdepth(1)
         ->in('/var/tmp')
         ;
-    
+
     # find any, return the last one else create it
     return pop @dirs if @dirs > 0;
     return tempdir "yum-$name-XXXXXX", DIR => '/var/tmp';
@@ -77,33 +81,29 @@ sub _build_repomd {
 
     # fetch and write repomd.xml...
     my $xmlstr = $self->_fetch($self->uri . 'repodata/repomd.xml');
-    write_file file($self->repo_dir, 'repomd.xml'), { atomic => 1}, $xmlstr;
+    write_file
+        file($self->repo_dir, 'repomd.xml')->stringify,
+        { atomic => 1},
+        $xmlstr
+        ;
 
     # now, convert to a hashref and return the interesting bits...
     return XMLin($xmlstr, KeyAttr => 'type')->{data};
 }
 
-has primary   => (is => 'ro', lazy_build => 1, isa => 'YUM::RepoQuery::Schema::Primary');
-has other     => (is => 'ro', lazy_build => 1, isa => 'YUM::RepoQuery::Schema::Other');
-has filelists => (is => 'ro', lazy_build => 1, isa => 'YUM::RepoQuery::Schema::Filelists');
-
-sub _build_primary   { shift->_fetch_db('primary') }
-sub _build_other     { shift->_fetch_db('other') }
-sub _build_filelists { shift->_fetch_db('filelists') }
-
-
-
 # note we do this as a hash as it makes 'exists' easier :-)
 has _packages => (
-    metaclass  => 'Collection::Hash',
+
+    traits     => [ 'Hash' ],
     is         => 'ro',
     isa        => 'HashRef[Str]',
     lazy_build => 1,
 
-    provides => {
-        count  => 'package_count',
-        exists => 'has_package',
-        keys   => 'packages',
+    handles => {
+
+        package_count => 'count',
+        has_package   => 'exists',
+        packages      => 'keys',
     },
 );
 
@@ -117,7 +117,7 @@ sub _build__packages {
     return \%pkgs;
 }
 
-sub get_package { 
+sub get_package {
     my $self = shift @_;
     my $name = shift @_ || confess 'Must provide package name!';
 
@@ -133,9 +133,9 @@ sub _fetch_db {
     my $self = shift @_;
     my $name = shift @_ || confess "Must pass the db data name to fetch";
 
-    # we could check to make sure we know how to handle it, but for now... 
+    # we could check to make sure we know how to handle it, but for now...
     my $mdkey  = $name . '_db';
-    my $mdinfo = $self->repomd->{$mdkey} 
+    my $mdinfo = $self->repomd->{$mdkey}
         or confess "repomd doesn't contain any info about $mdkey";
 
     #my $db_loc_uri = $self->uri . '/' . $mdinfo->{location}->{href};
@@ -150,21 +150,14 @@ sub _fetch_db {
         my $db_cache = $self->_fetch($db_loc_uri);
 
         # and write out, bunzip2ing as we go...
-        bunzip2 \$db_cache => $db_fn
+        bunzip2 \$db_cache => "$db_fn"
             or confess "bunzip2 error: $IO::Uncompress::Bzip2::Bunzip2error";
     }
 
-    # now, figure out what class to load and create our schema object...
-    our $class = 'YUM::RepoQuery::Schema::' 
-        . ucfirst $name . '::Version' . $mdinfo->{database_version};
-
-    eval "use $class";
-    confess "Cannot use $class: $@" if $@;
-
-    return $class->connect("dbi:SQLite:$db_fn");
+    return $db_fn;
 }
 
-sub _fetch {    
+sub _fetch {
     my $self = shift @_;
     my $uri  = shift @_ || confess 'Must pass a uri';
 
@@ -180,12 +173,17 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
-__END__
+
+
+=pod
 
 =head1 NAME
 
-YUM::RepoQuery - Query a YUM repository for package information 
+YUM::RepoQuery - Query a YUM repository for package information
 
+=head1 VERSION
+
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -198,7 +196,6 @@ YUM::RepoQuery - Query a YUM repository for package information
         uri => 'ftp://mirrors.kernel.org/fedora/updates/9/SRPMS',
     );
 
-
 =head1 DESCRIPTION
 
 YUM::RepoQuery takes the URI to a package repository with YUM metadata, and
@@ -208,7 +205,7 @@ available in that repo.
 WARNING: This is a very early, primitive package.  "Release early, release
 often", right? :)
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 "Release Early, Release Often"
 
@@ -226,7 +223,7 @@ at this module's rt tracker address (L<bug-yum-repoquery@rt.cpan.org>).
 Standard constructor.  Takes a number of arguments, two of which are
 required:
 
-=over 4 
+=over 4
 
 =item I<id>
 
@@ -268,23 +265,7 @@ repository.
 
 Given a package name, returns the row object corresponding to it.
 
-=back 
-
-=head1 CONFIGURATION AND ENVIRONMENT
-
-YUM::RepoQuery requires no configuration files or environment variables.
-
-
-=head1 DEPENDENCIES
-
-YUM::RepoQuery requires Moose, MooseX::AttributeHelpers, and the external
-executable 'repoquery'.
-
-
-=head1 INCOMPATIBILITIES
-
-None known.
-
+=back
 
 =head1 BUGS AND LIMITATIONS
 
@@ -297,33 +278,21 @@ Please report any bugs or feature requests to
 C<bug-yum-repoquery@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
-
 =head1 AUTHOR
 
-Chris Weyl  C<< <cweyl@alumni.drew.edu> >>
+Chris Weyl <cweyl@alumni.drew.edu>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2011 by Chris Weyl.
+
+This is free software, licensed under:
+
+  The GNU Lesser General Public License, Version 2.1, February 1999
+
+=cut
 
 
-=head1 LICENSE AND COPYRIGHT
-
-Copyright (c) 2008, Chris Weyl C<< <cweyl@alumni.drew.edu> >>.
-
-This library is free software; you can redistribute it and/or modify it under
-the terms of the GNU Lesser General Public License as published by the Free 
-Software Foundation; either version 2.1 of the License, or (at your option) 
-any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT 
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-OR A PARTICULAR PURPOSE.
-
-See the GNU Lesser General Public License for more details.  
-
-You should have received a copy of the GNU Lesser General Public License 
-along with this library; if not, write to the 
-
-    Free Software Foundation, Inc., 
-    59 Temple Place, Suite 330, 
-    Boston, MA  02111-1307 USA
-
+__END__
 
 # vim:textwidth=96:
